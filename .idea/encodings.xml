@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mybaties" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/testshop_annotation" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/testshop_xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/testshop_xmlandannotattion" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

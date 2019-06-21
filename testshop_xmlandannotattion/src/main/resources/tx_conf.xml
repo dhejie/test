@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+
+       xmlns:context="http://www.springframework.org/schema/context"
+
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+
+       ">
+<!--通过xml配置声明事务，需要添加tx命名空间-->
+<!--引入外部properties文件-->
+<context:property-placeholder location="classpath:jdbc.properties"/>
+<!--    取值配置数据源-->
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="url" value="${jc.url}"/>
+    <property name="driverClassName" value="${jc.driver}"/>
+    <property name="password" value="${jc.password}"/>
+    <property name="username" value="${jc.username}"/>
+</bean>
+<!--初始化事务管理器  用的是spring的-->
+<bean id="txM" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource"/>
+</bean>
+<!--配置事务AOP通知-->
+<tx:advice id="txd" transaction-manager="txM">
+    <tx:attributes>
+        <tx:method name="inse*" rollback-for="ArithmeticException"/>
+    </tx:attributes>
+</tx:advice>
+
+<!--    定义AOP配置，将以上通知和表达式组合到一起-->
+ <aop:config>
+     <aop:pointcut id="all_Method" expression="execution(* testshop2.annotation_aop.dao.*.*(..))"/>
+        <aop:advisor advice-ref="txd" pointcut-ref="all_Method"/>
+ </aop:config>
+</beans>
