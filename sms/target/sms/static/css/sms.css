@@ -1,0 +1,124 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: url("/sms/static/images/sms_bg.png") repeat-x;
+}
+
+.login .header {
+    background: url("/sms/static/images/sms_login_title.png") center no-repeat;
+    height: 50px;
+    margin-top: 50px;
+}
+
+.login .main {
+    background: url("/sms/static/images/sms_login_bg.png") center no-repeat;
+    height: 350px;
+}
+
+.login .main form {
+    padding: 100px 0;
+    width: 350px;
+    margin: 0 auto;
+}
+
+.login .main form input {
+    margin: 20px 0;
+    width: 260px;
+    line-height: 2em;
+}
+
+.login .main form div {
+    text-align: center;
+}
+
+.login input[type='button'],.login input[type='submit'] {
+    width: 90px !important;
+    height: 40px !important;
+}
+
+.login input[type='submit'] {
+    background: url("/sms/static/images/sms_btn_login.png") center no-repeat;
+}
+
+.login input[type='button'] {
+    background: url("/sms/static/images/sms_btn_reg.png") center no-repeat;
+    margin-left: 80px !important;
+}
+
+.register .header {
+    background: url("/sms/static/images/sms_reg_title.png") center no-repeat;
+    height: 40px;
+    margin-top: 50px;
+}
+
+.register .main {
+    background: url("/sms/static/images/sms_reg_bg.png") center no-repeat;
+    height: 450px;
+}
+
+.register .main form {
+    padding: 80px 0;
+    width: 350px;
+    margin: 0 auto;
+}
+
+.register .main form input {
+    margin: 15px 0;
+    width: 260px;
+    line-height: 2em;
+}
+
+.register .main form div {
+    text-align: center;
+}
+
+label {
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+}
+
+
+
+.register input[type='button'],.register input[type='submit'] {
+    width: 90px !important;
+    height: 35px !important;
+}
+
+.register input[type='submit'] {
+    background: url("/sms/static/images/sms_btn_reg.png") center no-repeat;
+}
+
+.register input[type='button'] {
+    background: url("/sms/static/images/sms_btn_reset.png") center no-repeat;
+    margin-left: 80px !important;
+}
+.main_boby{
+    background: url("/sms/static/images/sms_home_bg.png")center no-repeat;
+    text-align: center;
+}
+.main_title{
+    background: url("/sms/static/images/sms_my_message.png")center no-repeat;
+    top: -35px;
+    height: 180px;
+    right: 275px;
+    position: relative;
+
+}
+.main_header{
+    top:-88px;
+    left: 310px;
+    position: relative;
+}
+.main_hr{
+    width: 1500px;
+border:1px white dotted;
+
+}
+.main_img_span{
+
+    left: 1200px;
+}

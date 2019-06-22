@@ -1,0 +1,2620 @@
+# JAVAWEB总结
+
+## JSP & EL & JSTL
+
+### JSP基础知识
+
+> JSP全称Java Server Pages，中文名叫java服务器页面，其根本是一个简化的Servlet设计，它是由Sun Microsystems公司倡导、许多公司参与一起建立的一种动态网页技术标准。
+
+- 什么是jsp
+
+> 从用户角度看待 ，就是是一个网页 ， 从程序员角度看待 ， 其实是一个java类， 它继承了servlet，所以可以直接说jsp 就是一个Servlet.
+
+- 为什么会有jsp?
+
+  > html 多数情况下用来显示静态内容 ， 一成不变的。 但是有时候我们需要在网页上显示一些动态数据， 比如： 查询所有的学生信息， 根据姓名去查询具体某个学生。  这些动作都需要去查询数据库，然后在网页上显示。 html是不支持写java代码  ， jsp里面可以写java代码。 
+
+- 动态网页
+
+> 所谓的动态网页，是指跟静态网页相对的一种网页编程技术。静态网页，随着html代码的生成，页面的内容和显示效果就基本上不会发生变化了——除非你修改页面代码。而动态网页则不然，页面代码虽然没有变，但是显示的内容却是可以随着时间、环境或者数据库操作的结果而发生改变的。
+>
+> 不要将动态网页和页面内容是否有动感混为一谈。这里说的动态网页，与网页上的各种动画、滚动字幕等视觉上的动态效果没有直接关系，动态网页也可以是纯文字内容的，也可以是包含各种动画的内容，这些只是网页具体内容的表现形式，无论网页是否具有动态效果，只要是采用了动态网站技术生成的网页都可以称为动态网页。
+
+### 页面结构
+
+##### JSP声明变量、方法, 全局的
+
+```jsp
+<%! 
+
+  private int age = 0;
+
+public void sayHello() {
+ out.println("Hello World!");
+
+  }
+
+%>
+```
+
+##### JSP表达式,输出到展示页面
+
+```jsp
+<%=age %>
+```
+
+##### Java代码片段
+
+```jsp
+<%
+
+age = age + 10;
+sayHello();
+
+%>
+```
+
+##### JSP注释
+
+| **语法**       | 描述                                                 |
+| :------------- | :--------------------------------------------------- |
+| <%-- 注释 --%> | JSP注释，注释内容不会被发送至浏览器甚至不会被编译    |
+| <!-- 注释 -->  | HTML注释，通过浏览器查看网页源代码时可以看见注释内容 |
+| <\%            | 代表静态 <%常量                                      |
+| %\\>           | 代表静态 %> 常量                                     |
+| \\'            | 在属性中使用的单引号                                 |
+| \\"            | 在属性中使用的双引号                                 |
+
+##### JSP生命周期
+
+- 编译阶段
+
+  当浏览器请求JSP页面时，JSP引擎会首先去检查是否需要编译这个文件。如果这个文件没有被编译过，或者在上次编译后被更改过，则编译这个JSP文件。
+
+  - 解析JSP文件
+  - 将JSP文件转为Servlet
+  - 编译Servlet文件
+
+- 初始化阶段
+
+  加载与JSP对应的servlet类，创建其实例，并调用它的初始化方法
+
+```java
+// 可以重写此方法，添加初始化逻辑
+public void _jspInit() {
+}
+```
+
+- 执行阶段
+
+  调用与JSP对应的servlet实例的服务方法
+
+```java
+public void _jspService(final javax.servlet.http.HttpServletRequest request, final javax.servlet.http.HttpServletResponse response)throws java.io.IOException, javax.servlet.ServletException {
+  // 分发请求
+  // doGet
+  // doPost
+}
+```
+
+- 销毁阶段
+
+  调用与JSP对应的servlet实例的销毁方法，然后销毁servlet实例
+
+```java
+// 可以重写此方法，添加销毁操作
+public void _jspDestroy() {
+}
+```
+
+### 三大JSP指令
+
+##### 指令写法
+
+```jsp
+<%@ 指令名字 属性名="属性值" %>
+```
+
+##### page指令
+
+- language
+
+> 表明jsp页面中可以写java代码
+
+- contentType
+
+> 其实即使说这个文件是什么类型，告诉浏览器我是什么内容类型，以及使用什么编码
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+```
+
+- pageEncoding  jsp内容编码
+- extends 用于指定jsp翻译成java文件后，继承的父类是谁，一般不用改。
+- import 导包使用的，一般不用手写。
+- session 
+
+> 值可选的有true or false .
+
+> 用于控制在这个jsp页面里面，能够直接使用session对象。
+
+> 具体的区别是，请看翻译后的java文件   如果该值是true , 那么在代码里面会有getSession（）的调用，如果是false :  那么就不会有该方法调用，也就是没有session对象了。在页面上自然也就不能使用session了。
+
+- errorPage
+
+> 指的是错误的页面， 值需要给错误的页面路径
+
+- isErrorPage
+
+> 上面的errorPage 用于指定错误的时候跑到哪一个页面去。 那么这个isErroPage , 就是声明某一个页面到底是不是错误的页面。
+
+##### include指令
+
+> 包含另外一个jsp的内容进来。
+
+```
+	<%@ include file="other02.jsp"%>
+```
+
+- 背后细节:
+
+> 把另外一个页面的所有内容拿过来一起输出。 所有的标签元素都包含进来。
+
+##### taglib
+
+##### 作用：用于引入标签库
+
+语法：<%@ taglib prefix=""  uri=""%>  
+
+```
+uri: 标签库路径
+prefix : 标签库的别名  
+```
+
+## 七大JSP 动作标签
+
+![七大动作标签](https://img-blog.csdn.net/20160715152725431?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+
+##### jsp:include
+
+```jsp
+<jsp:include page="other02.jsp"></jsp:include>
+```
+
+> 包含指定的页面， 这里是动态包含。 也就是不把包含的页面所有元素标签全部拿过来输出，而是把它的运行结果拿过来。 
+
+jsp:forward
+
+```jsp
+<!-- 不带参数跳转 -->
+<jsp:forward page="test.jsp"></jsp:forward>
+<jsp:forward page="test.jsp" />
+
+<!-- 带参数跳转 -->
+<!-- 中文参数会出现乱码，因为底层是通过URIEncoding来编码的，默认取的是request.getCharsetEncoding() , 要解决此乱码问题，我们需要再跳转前设置 request.setCharsetEncoding("UTF-8");
+-->
+<% request.setCharsetEncoding("UTF-8"); %>
+<jsp:forward page="test.jsp">
+	<jsp:param name="sname" value="zhangsan" />
+</jsp:forward>
+
+<!-- 如果这样写，中间必须加上param子标签 -->
+<jsp:forward page="test.jsp">
+</jsp:forward>
+```
+
+> 前往哪一个页面。  
+
+##### jsp:param
+
+> 意思是： 在包含某个页面的时候，或者在跳转某个页面的时候，加入这个参数。
+
+```jsp
+<jsp:forward page="other02.jsp">
+  <jsp:param value="beijing" name="address"/>
+</jsp:forward>
+
+在other02.jsp中获取参数
+
+<br>收到的参数是：<br>
+
+<%= request.getParameter("address")%>
+```
+
+##### jsp:useBean&jsp:setProperty&jsp:getProperty
+
+这组动作标签用于实例化JavaBean，并且设置、获取属性
+
+```jsp
+<jsp:useBean id="stu" class="com.lanou3g.demo.bean.Student" />
+<jsp:setProperty name="stu" property="sname" value="张三" />
+<jsp:getProperty property="sname" name="stu"/>
+```
+
+
+
+##### JSP九大内置对象
+
+> 所谓内置对象，就是我们可以直接在jsp页面中使用这些对象。 不用创建。
+
+##### pageContext 【javax.servlet.jsp.PageContext】
+
+  作用：为JSP页面包装页面的上下文。
+
+| 方法名            | 说明                                 |
+| ----------------- | ------------------------------------ |
+| forward           | 重定向到另一页面或Servlet组件        |
+| getAttribute      | 获取某范围中指定名字的属性值         |
+| findAttribute     | 按范围搜索指定名字的属性             |
+| removeAttribute   | 删除某范围中指定名字的属性           |
+| setAttribute      | 设定某范围中指定名字的属性值         |
+| getException      | 返回当前异常对象                     |
+| getRequest        | 返回当前请求对象                     |
+| getResponse       | 返回当前响应对象                     |
+| getServletConfig  | 返回当前页面的ServletConfig对象      |
+| getServletContext | 返回所有页面共享的ServletContext对象 |
+| getSession        | 返回当前页面的会话对象               |
+
+##### request   【javax.servlet.http.HttpServletRequest】
+
+  作用：向服务端请求数据
+
+| 方法名               | 说明                                      |
+| -------------------- | ----------------------------------------- |
+| isUserInRole         | 判断认证后的用户是否属于某一成员组        |
+| getAttribute         | 获取指定属性的值,如该属性值不存在返回Null |
+| getAttributeNames    | 获取所有属性名的集合                      |
+| getCookies           | 获取所有Cookie对象                        |
+| getCharacterEncoding | 获取请求的字符编码方式                    |
+| getContentLength     | 返回请求正文的长度,如不确定返回-1         |
+| getHeader            | 获取指定名字报头值                        |
+| getHeaders           | 获取指定名字报头的所有值,一个枚举         |
+| getHeaderNames       | 获取所有报头的名字,一个枚举               |
+| getInputStream       | 返回请求输入流,获取请求中的数据           |
+| getMethod            | 获取客户端向服务器端传送数据的方法        |
+| getParameter         | 获取指定名字参数值                        |
+| getParameterNames    | 获取所有参数的名字,一个枚举               |
+| getParameterValues   | 获取指定名字参数的所有值                  |
+| getProtocol          | 获取客户端向服务器端传送数据的协议名称    |
+| getQueryString       | 获取以get方法向服务器传送的查询字符串     |
+| getRequestURI        | 获取发出请求字符串的客户端地址            |
+| getRemoteAddr        | 获取客户端的IP地址                        |
+| getRemoteHost        | 获取客户端的名字                          |
+| getSession           | 获取和请求相关的会话                      |
+| getServerName        | 获取服务器的名字                          |
+| getServerPath        | 获取客户端请求文件的路径                  |
+| getServerPort        | 获取服务器的端口号                        |
+| removeAttribute      | 删除请求中的一个属性                      |
+| setAttribute         | 设置指定名字参数值                        |
+
+##### session   【javax.servlet.http.HttpSession】
+
+  作用：用来保存每个用户的信息,以便跟踪每个用户的操作状态
+
+| 方法名                 | 说明                                    |
+| ---------------------- | --------------------------------------- |
+| getAttribute           | 获取指定名字的属性                      |
+| getAttributeNames      | 获取session中全部属性名字,一个枚举      |
+| getCreationTime        | 返回session的创建时间                   |
+| getId                  | 获取会话标识符                          |
+| getLastAccessedTime    | 返回最后发送请求的时间                  |
+| getMaxInactiveInterval | 返回session对象的生存时间单位千分之一秒 |
+| invalidate             | 销毁session对象                         |
+| isNew                  | 每个请求是否会产生新的session对象       |
+| removeAttribute        | 删除指定名字的属性                      |
+| setAttribute           | 设定指定名字的属性值                    |
+
+##### application  【javax.servlet.ServletContext】
+
+  作用：对应ServletContext对象， 在整个应用的生命周期内共享数据
+
+| 方法名            | 说明                                  |
+| ----------------- | ------------------------------------- |
+| getAttribute      | 获取应用对象中指定名字的属性值        |
+| getAttributeNames | 获取应用对象中所有属性的名字,一个枚举 |
+| getInitParameter  | 返回应用对象中指定名字的初始参数值    |
+| getServletInfo    | 返回Servlet编译器中当前版本信息       |
+| setAttribute      | 设置应用对象中指定名字的属性值        |
+
+##### out		 【javax.servlet.jsp.JspWriter】
+
+  作用：向客户端输出数据
+
+| 方法名         | 说明                              |
+| -------------- | --------------------------------- |
+| print或println | 输出数据                          |
+| newLine        | 输出换行字符                      |
+| flush          | 输出缓冲区数据                    |
+| close          | 关闭输出流                        |
+| clear          | 清除缓冲区中数据,但不输出到客户端 |
+| clearBuffer    | 清除缓冲区中数据,输出到客户端     |
+| getBufferSize  | 获得缓冲区大小                    |
+| getRemaining   | 获得缓冲区中没有被占用的空间      |
+| isAutoFlush    | 是否为自动输出                    |
+
+response  【javax.servlet.http.HttpServletResponse】
+
+  作用：封装了jsp产生的响应,然后被发送到客户端以响应客户的请求
+
+| 方法名          | 说明                               |
+| --------------- | ---------------------------------- |
+| addCookie       | 添加一个Cookie对象                 |
+| addHeader       | 添加Http文件指定名字头信息         |
+| containsHeader  | 判断指定名字Http文件头信息是否存在 |
+| encodeURL       | 使用sessionid封装URL               |
+| flushBuffer     | 强制把当前缓冲区内容发送到客户端   |
+| getBufferSize   | 返回缓冲区大小                     |
+| getOutputStream | 返回到客户端的输出流对象           |
+| sendError       | 向客户端发送错误信息               |
+| sendRedirect    | 把响应发送到另一个位置进行处理     |
+| setContentType  | 设置响应的MIME类型                 |
+| setHeader       | 设置指定名字的Http文件头信息       |
+
+##### exception  【java.lang.Throwable】
+
+  被调用的错误页面的结果,只有在错误页面中才可使用,
+
+  即在页面指令中设置:<%@page isErrorPage=“true”%>
+
+##### page	 【java.lang.Object】
+
+  它代表JSP被编译成Servlet,可以使用它来调用Servlet类中所定义的方法
+
+##### config 【javax.servlet.ServletConfig】
+
+  作用：表示Servlet的配置,当一个Servlet初始化时,容器把某些信息通过此对象传递给这个Servlet
+
+| 方法名                | 说明                                 |
+| --------------------- | ------------------------------------ |
+| getServletContext     | 返回所执行的Servlet的环境对象        |
+| getServletName        | 返回所执行的Servlet的名字            |
+| getInitParameter      | 返回指定名字的初始参数值             |
+| getInitParameterNames | 返回该JSP中所有的初始参数名,一个枚举 |
+
+#### 四个作用域 
+
+> 表示这些对象可以存值，他们的取值范围有限定。  setAttribute   和  getAttribute
+
+##### 使用作用域来存储数据
+
+```jsp
+<%
+pageContext.setAttribute("name", "page");
+request.setAttribute("name", "request");
+session.setAttribute("name", "session");
+application.setAttribute("name", "application");
+%>
+```
+
+##### 取出四个作用域中的值
+
+```jsp
+<%=pageContext.getAttribute("name")%>
+<%=request.getAttribute("name")%>
+<%=session.getAttribute("name")%>
+<%=application.getAttribute("name")%>
+```
+
+作用域范围大小：
+
+> pageContext -- request --- session -- application 
+
+##### 四个作用域的区别
+
+- pageContext 【PageContext】
+
+> 作用域仅限于当前的页面。  
+>
+> 除了可以存储数据， 还可以获取其他8个内置对象
+
+- request 【HttpServletRequest】
+
+> 作用域仅限于一次请求， 只要服务器对该请求做出了响应。 这个域中存的值就没有了。
+
+- session 【HttpSession】
+
+> 作用域限于一次会话（多次请求与响应） 当中。 
+
+- application 【ServletContext】
+
+> 整个工程都可以访问， 服务器关闭后就不能访问了。 
+
+## EL表达式
+
+> 是为了简化咱们的jsp代码，具体一点就是为了简化在jsp里面写的那些java代码。
+
+- 语法结构
+
+  ${expression }
+
+- 从指定的作用域取参数
+
+  ${requestScope.表达式}
+
+> 如果从作用域中取值，会先从小的作用域开始取，如果没有，就往下一个作用域取。  一直把四个作用域取完都没有， 就没有显示。
+
+### 如何使用
+
+1. 取出4个作用域中存放的值。
+
+```jsp
+<%
+pageContext.setAttribute("name", "page");
+request.setAttribute("name", "request");
+session.setAttribute("name", "session");
+application.setAttribute("name", "application");
+%>
+
+按普通手段取值<br>
+
+<%= pageContext.getAttribute("name")%>
+<%= request.getAttribute("name")%>
+<%= session.getAttribute("name")%>
+<%= application.getAttribute("name")%>
+
+<br>使用EL表达式取出作用域中的值<br>
+
+${ pageScope.name }
+${ requestScope.name }
+${ sessionScope.name }
+${ applicationScope.name }
+```
+
+2. 如果域中所存的是数组
+
+```jsp
+<%
+String [] a = {"aa","bb","cc","dd"};
+pageContext.setAttribute("array", a);
+%>
+      		
+使用EL表达式取出作用域中数组的值<br>
+
+${array[0] } , ${array[1] },${array[2] },${array[3] }
+```
+
+3. 如果域中锁存的是集合
+
+```jsp
+<%
+List<String> list =  new ArrayList<>();
+list.add("aa");
+list.add("bb");
+list.add("cc");
+list.add("dd");
+
+pageContext.setAttribute("li", list);
+%>
+使用EL表达式取出作用域中集合的值<br>
+
+${list[0] } , ${li[1] },${li[2] },${li[3] }
+
+```
+
+4. 取出Map集合的值
+
+```java
+<%
+Map map = new HashMap();
+map.put("name", "zhangsna");
+map.put("age",18);
+map.put("address","北京..");
+
+map.put("address.aa","深圳..");
+
+pageContext.setAttribute("map", map);
+%>
+使用EL表达式取出作用域中Map的值<br>
+
+<!-- map的key中有特殊字符时，我们必须用[]这种方式来获取值 -->
+${map.name } , ${map.age } , ${map.address }  , ${map["address.aa"] }
+```
+
+
+
+## EL表达式 的11个内置对象。 
+
+${ 对象名.成员 }
+
+- pageContext 
+
+作用域相关对象
+
+- pageScope
+- requestScope
+- sessionScope
+- applicationScope
+
+头信息相关对象
+
+- header
+- headerValues
+
+参数信息相关对象
+
+- param
+- paramValues
+
+- cookie
+
+全局初始化参数
+
+- initParam
+
+## JSTL
+
+> 全称 ： JSP Standard Tag Library  jsp标准标签库
+
+> 简化jsp的代码编写。 替换 <%%> 写法。 一般与EL表达式配合
+
+### 怎么使用
+
+1. 导入jar文件到工程的WebContent/Web-Inf/lib  jstl.jar standard.jar
+2. 在jsp页面上，使用taglib 指令，来引入标签库
+
+> 比如引入JSTL核心标签库
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+```
+
+3. 注意： 如果想支持 EL表达式，那么引入的标签库必须选择1.1以上的版本，1.0的版本不支持EL表达式。
+
+### JSTL标签分类
+
+#### 核心标签(最核心、最重用)
+
+```jsp
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+```
+
+- 表达式控制标签
+
+  - out
+
+  | 属性名    | 含义                                                        | 是否必须 |
+  | --------- | ----------------------------------------------------------- | -------- |
+  | value     | 输出值，如果是常量直接赋值， 如果是变量需要通过EL表达式取值 | 是       |
+  | default   | 当value为null时， 输出default属性配置的值                   | 否       |
+  | escapeXml | 是否转义XML特殊字符，取值true/false， 默认是true            | 否       |
+
+  - set
+
+  | 属性名   | 含义                                                         | 是否必须 |
+  | -------- | ------------------------------------------------------------ | -------- |
+  | value    | 搭配var属性使用，设置变量的值；搭配property和target使用，设置javabean属性的值 | 是       |
+  | var      | 定义的变量名称                                               | 否       |
+  | scope    | 变量保存到的作用域，默认是pageContext                        | 否       |
+  | target   | 给javabean设置属性，指定那个javabean。需配合&lt;jsp:useBean&gt;标签和property、value属性使用 | 否       |
+  | property | 设置javabean的哪个属性的值                                   | 否       |
+
+  - remove
+
+  | 属性名 | 含义                                                 | 是否必须 |
+  | ------ | ---------------------------------------------------- | -------- |
+  | var    | 删除指定的变量，只能删除变量，不能删除javabean的属性 | 是       |
+
+  - catch
+
+  | 属性名 | 含义         | 是否必须 |
+  | ------ | ------------ | -------- |
+  | var    | 存储错误信息 | 是       |
+
+  ```jsp
+  <%-- <c:catch>用于包裹其他容易出错的标签，比如 --%>
+  <c:catch var="error">
+    <!-- aa为没有实例化的javabean -->
+  	<c:set target="aa" property="name" value="zhangsan" />
+  </c:catch>
+  <c:out value="${error}" />
+  ```
+
+  
+
+- 流程控制标签
+
+  - if
+
+  ```jsp
+  <c:if test="${income > 8000}" var="ret">  
+     <p>My income is: <c:out value="${income}"/><p>  
+  </c:if>
+  <!-- var属性ret存储的是test运算的结果 -->
+  ${ret}
+  ```
+
+  
+
+  - choose&amp;when&amp;otherwise
+
+  ```jsp
+  <c:choose>  
+      <c:when test="${income <= 1000}">  
+         Income is not good.  
+      </c:when>  
+      <c:when test="${income > 10000}">  
+          Income is very good.  
+      </c:when>  
+      <c:otherwise>  
+         Income is undetermined...  
+      </c:otherwise>  
+  </c:choose>  
+  ```
+
+  
+
+  - forEach
+
+  ```jsp
+  <%
+   List<String> students = new ArrayList<>();
+   students.add("张三");
+   students.add("李四");
+   students.add("王五");
+   students.add("赵六");
+   
+   request.setAttribute("stus", students);
+  %>
+  
+  <!-- forEach遍历全部元素 -->
+  <c:forEach var="stu" items="${stus}">
+  	<c:out value="${stu}" /> <br />
+  </c:forEach>
+  
+  <!-- forEach遍历部分元素 -->
+  <c:forEach var="stu" items="${stus}" begin="1" end="3">
+  	<c:out value="${stu}" /> <br />
+  </c:forEach>
+  
+  <!-- forEach遍历部分元素，指定步长 -->
+  <c:forEach var="stu" items="${stus}" begin="1" step="2">
+  	<c:out value="${stu}" /> <br />
+  </c:forEach>
+  
+  <!-- 用法四：部分遍历并带状态 -->
+  <c:forEach var="stu" items="${stus}" begin="1" end="3" varStatus="status">
+  <c:out value="${stu}——四个属性："></c:out><br>
+  <c:out value="index属性：${status.index}"></c:out><br>
+  <c:out value="count属性：${status.count}"></c:out><br>
+  <c:out value="first属性：${status.first}"></c:out><br>
+  <c:out value="last属性：${status.last}"></c:out><br>
+  <c:out value="----------"></c:out><br>
+  </c:forEach>
+  
+  <!-- varStatus变量的几个属性：index从0开始；count从1开始；first是否第一个（boolean）；last是否最后一个（boolean）。  -->
+  
+  ```
+
+  - forTokens
+
+  ```jsp
+  <c:forTokens items="zhangsan,lisi,wangwu" delims="," var="item">
+  	<c:out value="${item}" /> <br />
+  </c:forTokens>
+  
+  <!-- 另外forTokens也支持begin、end、step、varStatus几个属性，用法和forEach一样 -->
+  ```
+
+- URL操作标签
+
+  - url
+
+  ```jsp
+   <c:url value="http://localhost:8080/Test/index.jsp" var="newUrl" scope="session">
+   		<c:param name="username">zhangsan</c:param>
+  		<c:param name="password">a123456</c:param>
+   </c:url>
+  	<a href="${newUrl}">New URL</a>
+  ```
+
+  - redirect
+
+  ```jsp
+  	<c:redirect url="www.baidu.com">
+  		<c:param name="username">zhangsan</c:param>
+  		<c:param name="password">a123456</c:param>
+  	</c:redirect>
+  ```
+
+  - param
+
+  一般作为其他标签的子标签使用，为其附加参数
+
+##### 格式化标签
+
+```jsp
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+```
+
+- 格式化时间
+
+```jsp
+<%
+	Date date = new Date();
+	pageContext.setAttribute("d", date);
+%>
+<fmt:formatDate value="${d }" pattern="yyyy-MM-dd HH:mm:ss"/>
+```
+
+- 格式化数字
+
+```jsp
+<%
+	double d1 = 3.5;
+	double d2 = 4.4; 
+	pageContext.setAttribute("d1", d1);
+	pageContext.setAttribute("d2", d2);
+%>
+<fmt:formatNumber value="${d1 }" pattern="0.00"/><br/>
+<fmt:formatNumber value="${d2 }" pattern="#.##"/>
+```
+
+#### SQL标签
+
+```jsp
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>  
+```
+
+- setDataSource
+
+```jsp
+<sql:setDataSource var="db" driver="com.mysql.jdbc.Driver"  
+     url="jdbc:mysql://localhost/test"  
+     user="root"  password="1234"/>  
+```
+
+- query
+
+```jsp
+<sql:query dataSource="${db}" var="rs">  
+SELECT * from Students;  
+</sql:query>  
+```
+
+- update
+
+```jsp
+<sql:update dataSource="${db}" var="count">  
+INSERT INTO Students VALUES (154,'Nasreen', 'jaha', 25);  
+</sql:update>  
+```
+
+- param &amp; dateParam
+
+```jsp
+<%
+Date DoB = new Date("2000/10/16");
+int studentId = 151;
+%>
+<sql:update dataSource="${db}" var="count">
+   UPDATE Student SET dob = ? WHERE Id = ?
+   <sql:dateParam value="<%=DoB%>" type="DATE" />
+   <sql:param value="<%=studentId%>" />
+</sql:update>
+
+```
+
+- transaction
+
+```jsp
+<sql:transaction dataSource="${db}">  
+   <sql:update var="count">  
+      UPDATE Student SET First_Name = 'Suraj' WHERE Id = 150  
+   </sql:update>  
+   <sql:update var="count">  
+      UPDATE Student SET Last_Name= 'Saifi' WHERE Id = 153  
+   </sql:update>  
+   <sql:update var="count">  
+     INSERT INTO Student   
+     VALUES (154,'Supriya', 'Jaiswal', '1995/10/6');  
+   </sql:update>  
+</sql:transaction>  
+```
+
+#### XML标签
+
+用的不多，这里不在列举
+
+ps: 更多详细内容，参见：[https://www.javatpoint.com/jstl](https://www.javatpoint.com/jstl)
+
+
+
+## 总结：
+
+- JSP
+
+  三大指令
+
+   		page
+   		include
+   		taglib
+   	
+   	六个动作标签
+   		<jsp:include>
+   		<jsp:forward>
+   		<jsp:param>
+
+  ​		jsp:useBean
+
+  ​		jsp:setProperty
+
+  ​		jsp:getProperty
+
+  	九个内置对象
+
+  		四个作用域
+  			pageContext
+  			request
+  			session
+  			application
+  	
+  		out
+  		exception
+  		response
+  		page
+  		config
+
+​			
+
+- EL
+
+  ${ 表达式 }
+
+  取4个作用域中的值
+
+  ```
+  ${ name }
+  ```
+
+  有11个内置对象。
+
+  ```
+  pageContext
+  
+  pageScope
+  requestScope
+  sessionScope
+  applicationScope
+  
+  header
+  headerValues
+  
+  param
+  paramValues
+  
+  cookie
+  initParam
+  ```
+
+- JSTL
+
+> 使用1.1的版本， 支持EL表达式， 1.0不支持EL表达式
+
+> 拷贝jar包， 通过taglib 去引入标签库
+
+```
+<c:set>
+<c:if>
+<c:forEach>
+```
+
+## Servlet基础
+
+[TOC]
+
+
+
+# Http协议&Servlet
+
+## Http协议
+
+- 什么是协议
+
+> 双方在交互、通讯的时候， 遵守的一种规范、规则。
+
+- http协议
+
+> 针对网络上的客户端 与 服务器端在执行http请求的时候，遵守的一种规范。 其实就是规定了客户端在访问服务器端的时候，要带上哪些东西， 服务器端返回数据的时候，也要带上什么东西。 
+
+- 版本
+
+  1.0
+
+  ```
+  	请求数据，服务器返回后， 将会断开连接
+  ```
+
+  1.1
+
+  ```
+  请求数据，服务器返回后， 连接还会保持着。 除非服务器 | 客户端 关掉。 有一定的时间限制，如果都空着这个连接，那么后面会自己断掉。
+  ```
+
+### 演示客户端 如何 与服务器端通讯。
+
+2. 打开tomcat. 输入localhost:8080 打开首页
+
+3. ## 在首页上找到Example 字样 
+
+> 6.x 和 7.x 的文档页面有所不同，但是只要找到example就能够找到例子工程
+
+4. 选择 servlet 例子 ---> Request Parameter
+
+![icon](C:/Users/%E4%BD%95%E8%BF%9B%E7%BB%93/Desktop/img/img01.png)
+
+接着点击Request  Parameters 的 Execute超链接
+
+![icon](C:/Users/%E4%BD%95%E8%BF%9B%E7%BB%93/Desktop/img/img02.png)
+
+执行tomcat的例子，然后通过chrome浏览器开发者工具中的Network栏查看浏览器和 tomcat服务器的对接细节
+
+### Http请求数据解释 
+
+> 请求的数据里面包含三个部分内容 ： 请求行 、 请求头 、请求体
+
+- 请求行
+
+  POST /examples/servlets/servlet/RequestParamExample HTTP/1.1 
+
+  ```
+  POST ： 请求方式 ，以post去提交数据
+  	
+  /examples/servlets/servlet/RequestParamExample
+  请求的地址路径 ， 就是要访问哪个地方。
+  
+  HTTP/1.1 协议版本
+  ```
+
+- 请求头
+
+  Accept: application/x-ms-application, image/jpeg, application/xaml+xml, image/gif, image/pjpeg, application/x-ms-xbap, */*
+  	Referer: http://localhost:8080/examples/servlets/servlet/RequestParamExample
+  	Accept-Language: zh-CN
+  	User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)
+  	Content-Type: application/x-www-form-urlencoded
+  	Accept-Encoding: gzip, deflate
+  	Host: localhost:8080
+  	Content-Length: 31
+  	Connection: Keep-Alive
+  	Cache-Control: no-cache
+
+  ```
+  Accept: 客户端向服务器端表示，我能支持什么类型的数据。 
+  Referer ： 真正请求的地址路径，全路径
+  Accept-Language: 支持语言格式
+  User-Agent: 用户代理 向服务器表明，当前来访的客户端信息。 
+  Content-Type： 提交的数据类型。经过urlencoding编码的form表单的数据
+  Accept-Encoding： gzip, deflate ： 压缩算法 。 
+  Host ： 主机地址
+  Content-Length： 数据长度
+  Connection : Keep-Alive 保持连接
+  Cache-Control ： 对缓存的操作
+  ```
+
+- 请求体
+
+> 浏览器真正发送给服务器的数据 
+
+```
+发送的数据呈现的是key=value ,如果存在多个数据，那么使用 &
+
+firstname=zhang&lastname=sansan
+```
+
+### Http响应数据解析
+
+> 请求的数据里面包含三个部分内容 ： 响应行 、 响应头 、响应体
+
+```
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=ISO-8859-1
+Content-Length: 673
+Date: Fri, 17 Feb 2017 02:53:02 GMT
+
+...这里还有很多数据...
+```
+
+- 响应行
+
+  HTTP/1.1 200 OK
+
+  ```
+  协议版本  
+  
+  状态码 
+  
+  	咱们这次交互到底是什么样结果的一个code. 
+  
+  	200 : 成功，正常处理，得到数据。
+  
+  	403  : for bidden  拒绝
+  	404 ： Not Found
+  	500 ： 服务器异常
+  
+  OK
+  
+  	对应前面的状态码  
+  ```
+
+- 响应头
+
+  Server:  服务器是哪一种类型。  Tomcat
+
+  ```
+  Content-Type ： 服务器返回给客户端你的内容类型
+  
+  Content-Length ： 返回的数据长度
+  
+  Date ： 通讯的日期，响应的时间		
+  ```
+
+## Get 和  Post请求区别
+
+![icon](C:/Users/%E4%BD%95%E8%BF%9B%E7%BB%93/Desktop/img/img04.png)
+
+- post
+  1. 数据是以流的方式写过去，不会在地址栏上面显示。  现在一般提交数据到服务器使用的都是POST
+  2. 以流的方式写数据，所以数据没有大小限制。
+- get
+  1. 会在地址栏后面拼接数据，所以有安全隐患。 一般从服务器获取数据，并且客户端也不用提交上面数据的时候，可以使用GET
+  2. 能够带的数据有限， 1kb大小
+
+## Web资源
+
+- 静态资源
+
+  html 、 js、 css
+
+- 动态资源
+
+  servlet/jsp
+
+## Servlet
+
+### servlet是什么?
+
+> 其实就是一个java程序，运行在我们的web服务器上，用于接收和响应 客户端的http请求。 
+
+> 更多的是配合动态资源来做。 当然静态资源也需要使用到servlet，只不过是Tomcat里面已经定义好了一个 DefaultServlet
+
+### Hello Servlet
+
+1. 得写一个Web工程 ， 要有一个服务器。
+2. 测试运行Web工程
+   1. 新建一个类， 实现Servlet接口
+   2. 配置Servlet ， 用意： 告诉服务器，我们的应用有这么些个servlet。
+      在webContent/WEB-INF/web.xml里面写上以下内容。
+
+```xml
+<!-- 向tomcat报告， 我这个应用里面有这个servlet， 名字叫做HelloServlet , 具体的路径是com.lanou3g.servlet.HelloServlet -->
+<servlet>
+    <servlet-name>HelloServlet</servlet-name>
+    <servlet-class>com.lanou3g.servlet.HelloServlet</servlet-class>
+</servlet>
+
+<!-- 注册servlet的映射。  servletName : 找到上面注册的具体servlet，  url-pattern: 在地址栏上的path 一定要以/打头 -->
+<servlet-mapping>
+<servlet-name>HelloServlet</servlet-name>
+<url-pattern>/HelloServlet</url-pattern>
+</servlet-mapping>
+```
+
+3. 在地址栏上输入 http://localhost:8080/项目名称/HelloServlet
+
+### Servlet的通用写法
+
+1. 定义一个类
+2. 继承HttpServlet
+3. 重写doGet 和 doPost
+
+```java
+public class HelloServlet extends HttpServlet {
+    //处理GET请求
+    @Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// do something
+	}
+	
+    //处理POST请求
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		
+        // 设置请求编码，防止出现中文参数乱码
+        req.setCharacterEncoding("UTF-8");
+		
+        // do something
+	}
+}
+```
+
+
+
+### Servlet的生命周期
+
+- 生命周期
+
+> 从创建到销毁的一段时间
+
+- 生命周期方法
+
+> 从创建到销毁，所调用的那些方法。
+
+- init方法
+
+  在创建该servlet的实例时，就执行该方法。
+  	一个servlet只会初始化一次， init方法只会执行一次
+  	默认情况下是 ： 初次访问该servlet，才会创建实例。 
+
+- service方法
+
+  只要客户端来了一个请求，那么就执行这个方法了。
+   	 该方法可以被执行很多次。 一次请求，对应一次service方法的调用
+
+- destroy方法
+
+  servlet销毁的时候，就会执行该方法
+  	  触发时机：	
+
+  ```
+  1. 该项目从tomcat的里面移除。
+  2. 正常关闭tomcat就会执行 shutdown.bat
+  ```
+
+> doGet 和 doPost不算生命周期方法，所谓的生命周期方法是指，从对象的创建到销毁一定会执行的方法， 但是这两个方法，不一定会执行。
+
+### 让Servlet创建实例的时机提前。
+
+1. 默认情况下，只有在初次访问servlet的时候，才会执行init方法。 有的时候，我们可能需要在这个方法里面执行一些初始化工作，甚至是做一些比较耗时的逻辑。 
+2. 那么这个时候，初次访问，可能会在init方法中逗留太久的时间。 那么有没有方法可以让这个初始化的时机提前一点。 
+3. 在配置的时候， 使用load-on-startup元素来指定， 给定的数字越小，启动的时机就越早。 一般不写负数， 从2开始即可。 
+
+```xml
+<servlet>
+    <servlet-name>HelloServlet04</servlet-name>
+    <servlet-class>com.itheima.servlet.HelloServlet04</servlet-class>
+    <load-on-startup>2</load-on-startup>
+</servlet>
+```
+
+### Servlet文件上传
+
+在Servlet 3.0之前我们要实现文件上传，必须借助apache的commons-fileupload、commons-io包。
+
+1. 添加lib包到WEB-INF/lib目录:
+
+```
+commons-fileupload-1.4.jar
+commons-io-2.2.jar
+```
+
+2. 客户端网页
+
+```html
+<!-- 注意method和enctype属性，文件上传必须用post提交，同时enctype必须设置成multipart/form-data -->
+<form action="FileUploadServlet" method="post" enctype="multipart/form-data">
+    <input type="file" name="myfile">
+    <input type="submit" value="上传">
+</form>
+```
+
+3. 后台Servlet
+
+```java
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.ProgressListener;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+/**
+ * 通过传统apache common-fleupload、common-io的方式上传文件
+ * @author John
+ *
+ */
+public class FileUploadServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	// 上传文件存储目录
+    private static final String UPLOAD_DIRECTORY = "upload";
+	
+	// 上传配置
+    private static final int MEMORY_THRESHOLD   = 1024 * 1024 * 3;  // 3MB
+    private static final int MAX_FILE_SIZE      = 1024 *  40; // 40KB
+    private static final int MAX_REQUEST_SIZE   = 1024 * 1024 * 50; // 50MB
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		//判断请求中是否有上传文件
+		resp.setContentType("text/html;charset=UTF-8");
+		PrintWriter out = resp.getWriter();
+		if(!ServletFileUpload.isMultipartContent(req)) {
+			out.println("没有上传文件!");
+			out.flush();
+			out.close();
+			return;
+		}
+		// 配置上传参数
+		DiskFileItemFactory factory = new DiskFileItemFactory();
+		// 设置内存临界值 - 超过后将产生临时文件并存储于临时目录中
+		factory.setSizeThreshold(MEMORY_THRESHOLD);
+		// 设置临时存储目录
+		factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
+		ServletFileUpload upload = new ServletFileUpload(factory);
+		// 设置最大文件上传值
+		upload.setFileSizeMax(MAX_FILE_SIZE);
+		// 设置最大请求值 (包含文件和表单数据)
+		upload.setSizeMax(MAX_REQUEST_SIZE);
+		
+		// 处理中文名称文件上传
+//		upload.setHeaderEncoding("utf-8");
+		upload.setProgressListener(new ProgressListener() {
+			public void update(long currentSize, long fileSize, int arg2) {
+				System.out.println("currentSize: " + currentSize + " fileSize: " + fileSize +" arg2: " + arg2);
+			}
+		});
+		
+		// 构造临时路径来存储上传的文件
+        // 这个路径相对当前应用的目录
+        String uploadPath = req.getServletContext().getRealPath("./") + File.separator + UPLOAD_DIRECTORY;
+        
+        // 如果目录不存在则创建
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdir();
+        }
+        
+        try {
+			List<FileItem> items = upload.parseRequest(req);
+			for(FileItem fi : items) {
+				// 普通表单字段
+				if(fi.isFormField()) {
+					System.out.println("name: " + fi.getFieldName() 
+					+ ", value: " + fi.getString());
+					continue;
+				}
+				
+				//保存文件
+				File saveFile = new File(uploadDir, fi.getName());
+				fi.write(saveFile);
+				out.println("文件上传成功!");
+				out.flush();
+				out.close();
+			}
+		} catch (Exception e) {
+			out.println("文件上传失败!(" + e.getMessage() + ")");
+			out.flush();
+			out.close();
+		}
+	}
+}
+```
+
+
+
+### 文件下载
+
+文件下载我们无需借助任何第三方包，也无需写太多实现代码。其原理其实就是设置响应头， 我们的浏览器其实不管你响应的是什么内容，只是根据响应头来做响应操作。比如我们响应的Content-Type设置为text/html浏览器就会渲染内容，如果我们响应的Content-Type设置为Content-Type:application/vnd.ms-excel，那浏览器就会调用本地excel程序或者直接用读取excel的方式来处理服务端返回的数据
+
+下面是一些常用的请求头示例：
+
+```java
+// 请求该页面就出现下载保存窗口。
+header("Content-Type:application/force-download");
+// 二进制流，不知道具体下载文件类型。
+header("Content-Type:application/octet-stream");
+// 表示要下载的文件类型是 .xls 
+header("Content-Type:application/vnd.ms-excel");
+// 提示用户将当前文件保存到本地。
+header("Content-Type:application/download");
+// 作为附件下载，文件名是 测试.xlsx
+header("Content-Disposition:attachment;filename=测试.xlsx");
+```
+
+
+
+### Servlet查询分页
+
+#### 逻辑分页
+
+一次从数据库中把所有数据读取到内存中， 在内存中进行数据切分，然后传到前端页面。
+
+#### 物理分页
+
+在查询数据库时就按照页数只取需要的数据，不在内存中处理
+
+#### 逻辑分页和物理分页对比
+
+1. 逻辑分页的好处在于不用多次查询数据库，可以有效减轻数据库的压力；缺点在于只适用于少量数据的表，如果数据量过大会占用过多内存，或内存装不下
+2. 物理分页的好处在于无论数据量大、小都可以用，代码业务逻辑简单；缺点在于每点击一次翻页都要对数据库发起一次查询，对数据库的压力相对比较大
+
+
+
+## ServletConfig
+
+> Servlet的配置，通过这个对象，可以获取servlet在配置的时候一些信息
+
+```java
+//1. 得到servlet配置对象 专门用于在配置servlet的信息
+ServletConfig config = getServletConfig();
+
+//获取到的是配置servlet里面servlet-name 的文本内容
+String servletName = config.getServletName();
+System.out.println("servletName="+servletName);
+
+	
+//2、。 可以获取具体的某一个参数。 
+String address = config.getInitParameter("address");
+System.out.println("address="+address);
+
+
+//3.获取所有的参数名称
+Enumeration<String> names = config.getInitParameterNames();
+//遍历取出所有的参数名称
+while (names.hasMoreElements()) {
+    String key = (String) names.nextElement();
+    String value = config.getInitParameter(key);
+    System.out.println("key==="+key + "   value="+value);
+
+}
+```
+
+### 为什么需要有这个ServletConfig
+
+1. 未来我们自己开发的一些应用，使用到了一些技术，或者一些代码，我们不会。 但是有人写出来了。它的代码放置在了自己的servlet类里面。 
+2. 刚好这个servlet 里面需要一个数字或者叫做变量值。 但是这个值不能是固定了。 所以要求使用到这个servlet的公司，在注册servlet的时候，必须要在web.xml里面，声明init-params
+
+在开发当中比较少用。
+
+刚才的这个实验， 希望基础好或者感兴趣的同学，回去自己做一下。
+
+
+
+### Servlet 3.0新特性
+
+与Servlet2.5相比Servlet3.0对我们的Web开发工作做了很多简化，主要体现在很多以前需要大段xml配置的地方，现在只需要一个简单的注解就可以搞定
+
+第二点提现在文件上传上，Servlet3.0以前我们要实现文件上传需要借助apache的fileupload包，Servlet3.0之后官方增加了Part方式和@MultipartConfig注解，可以让我们不需要借助任何第三方的包就可以很简便的实现文件上传
+
+#### Annotation支持
+
+##### @WebServlet
+
+用于将一个类声明为 Servlet，该注解将会在部署时被容器处理，容器将根据具体的属性配置将相应的类部署为 Servlet。该注解具有下表给出的一些常用属性（以下所有属性均为可选属性，但是 vlaue 或者 urlPatterns 通常是必需的，且二者不能共存，如果同时指定，通常是忽略 value 的取值）：
+
+| **属性名**     | **类型**       | **描述**                                                     |
+| :------------- | :------------- | :----------------------------------------------------------- |
+| name           | String         | 指定 Servlet 的 name 属性，等价于 <servlet-name>。如果没有显式指定，则该 Servlet 的取值即为类的全限定名。 |
+| value          | String[]       | 该属性等价于 urlPatterns 属性。两个属性不能同时使用。        |
+| urlPatterns    | String[]       | 指定一组 Servlet 的 URL 匹配模式。等价于 <url-pattern> 标签。 |
+| loadOnStartup  | int            | 指定 Servlet 的加载顺序，等价于 <load-on-startup> 标签。     |
+| initParams     | WebInitParam[] | 指定一组 Servlet 初始化参数，等价于 <init-param> 标签。      |
+| asyncSupported | boolean        | 声明 Servlet 是否支持异步操作模式，等价于 <async-supported> 标签。 |
+| description    | String         | 该 Servlet 的描述信息，等价于 <description> 标签。           |
+| displayName    | String         | 该 Servlet 的显示名，通常配合工具使用，等价于 <dis           |
+
+简单示例代码：
+
+```java
+@WebServlet(name="HelloServlet" ,urlPatterns={"/HelloServlet"},loadOnStartup=1,
+                    initParams={
+                           @WebInitParam(name="name",value="xiazdong"),
+                           @WebInitParam(name="age",value="20")
+                    })
+```
+
+相当于2.5中在web.xml中配置：
+
+```java
+<servlet>
+    <servlet-name>HelloServlet</servlet-name>
+    <servlet-class>com.demo.HelloServlet</servlet-class>
+    <load-on-startup>-1</load-on-startup>
+    <async-supported>true</async-supported>
+    <init-param>
+        <param-name>name</param-name>
+        <param-value>xiazdong</param-value>
+    </init-param>
+    <init-param>
+        <param-name>age</param-name>
+        <param-value>20</param-value>
+    </init-param>
+</servlet>
+<servlet-mapping>
+    <servlet-name>HelloServlet</servlet-name>
+    <url-pattern>/HelloServlet</url-pattern>
+</servlet-mapping>
+```
+
+
+
+##### @WebFilter
+
+用于将一个类声明为过滤器，该注解将会在部署时被容器处理，容器将根据具体的属性配置将相应的类部署为过滤器。该注解具有下表给出的一些常用属性 ( 以下所有属性均为可选属性，但是 value、urlPatterns、servletNames 三者必需至少包含一个，且 value 和 urlPatterns 不能共存，如果同时指定，通常忽略 value 的取值 )：
+
+| **属性名**      | **类型**       | **描述**                                                     |
+| :-------------- | :------------- | :----------------------------------------------------------- |
+| filterName      | String         | 指定过滤器的 name 属性，等价于 <filter-name>                 |
+| value           | String[]       | 该属性等价于 urlPatterns 属性。但是两者不应该同时使用。      |
+| urlPatterns     | String[]       | 指定一组过滤器的 URL 匹配模式。等价于 <url-pattern> 标签。   |
+| servletNames    | String[]       | 指定过滤器将应用于哪些 Servlet。取值是 @WebServlet 中的 name 属性的取值，或者是 web.xml 中 <servlet-name> 的取值。 |
+| dispatcherTypes | DispatcherType | 指定过滤器的转发模式。具体取值包括： ASYNC、ERROR、FORWARD、INCLUDE、REQUEST。 |
+| initParams      | WebInitParam[] | 指定一组过滤器初始化参数，等价于 <init-param> 标签。         |
+| asyncSupported  | boolean        | 声明过滤器是否支持异步操作模式，等价于 <async-supported> 标签。 |
+| description     | String         | 该过滤器的描述信息，等价于 <description> 标签。              |
+| displayName     | String         | 该过滤器的显示名，通常配合工具使用，等价于 <                 |
+
+简单示例：
+
+```java
+@WebFilter(filterName="",urlPattern={"/"});
+```
+
+
+
+##### @WebInitParam
+
+该注解通常不单独使用，而是配合 @WebServlet 或者 @WebFilter 使用。它的作用是为 Servlet 或者过滤器指定初始化参数，这等价于 web.xml 中 &lt;servlet&gt; 和 &lt;filter&gt; 的 &lt;init-param&gt; 子标签。@WebInitParam 具有下表给出的一些常用属性：
+
+| **属性名**  | **类型** | **是否可选** | **描述**                              |
+| :---------- | :------- | :----------- | :------------------------------------ |
+| name        | String   | 否           | 指定参数的名字，等价于 <param-name>。 |
+| value       | String   | 否           | 指定参数的值，等价于 <param-value>。  |
+| description | String   | 是           |                                       |
+
+
+
+##### @WebListener
+
+原本需要在web.xml中配置的&lt;listener&gt;标签，在3.0中我们只要往Java类上面添加@WebListener注解就可以了
+
+| **属性名** | **类型** | **是否可选** | **描述**             |
+| :--------- | :------- | :----------- | :------------------- |
+| value      | String   | 是           | 该监听器的描述信息。 |
+
+该注解用于将类声明为监听器，被 @WebListener 标注的类必须实现以下至少一个接口：
+
+- ServletContextListener
+- ServletContextAttributeListener
+- ServletRequestListener
+- ServletRequestAttributeListener
+- HttpSessionListener
+- HttpSessionAttributeListener
+
+示例代码：
+
+```java
+@WebListener("This is only a demo listener") 
+public class SimpleListener implements ServletContextListener{...}
+```
+
+相当于2.5中的
+
+```xml
+<listener> 
+    <listener-class>footmark.servlet.SimpleListener</listener-class> 
+</listener>
+```
+
+
+
+##### @MultipartConfig
+
+这个注解用于开启文件上传功能，属性值如下：
+
+| 属性名            | 类型   | 是否可选 | 描述                                                         |
+| :---------------- | :----- | :------- | :----------------------------------------------------------- |
+| fileSizeThreshold | int    | 是       | 当数据量大于该值时，内容将被写入文件。                       |
+| location          | String | 是       | 存放生成的文件地址。                                         |
+| maxFileSize       | long   | 是       | 允许上传的文件最大值。默认值为 -1，表示没有限制。            |
+| maxRequestSize    | long   | 是       | 针对该 multipart/form-data 请求的最大数量，默认值为 -1，表示没有限制。 |
+
+
+
+具体用法，请参见《文件上传》章节
+
+#### 文件上传
+
+在Servlet3.0之前我们要想实现文件上传必须借助common-fileupload或者SmartUpload，上传过程比较麻烦。而到了Servlet3.0，我们不需要导入任何第三方jar包，并且提供了很方便进行文件上传的功能
+
+主要步骤如下：
+
+1. 在需要实现文件上传的Servlet类前加上@MultipartConfig注解
+2. 通过request.getPart()获得上传的文件，以及文件相关的各种属性
+3. 通过part.write()将上传的文件写到服务器
+
+客户端代码：
+
+```html
+<html>
+       <body>
+              <form method="post" enctype="multipart/form-data" action="upload">
+             <input type="file" id="file" name="file"/>
+             <input type="text" id="name" name="name"/>
+              <input type="submit" value="提交"/>
+              </form>
+       </body>
+</html>
+```
+
+服务端代码：
+
+```java
+package org.servlet;
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.annotation.*;
+ 
+@WebServlet(name="UploadServlet" ,urlPatterns={"/upload"})
+@MultipartConfig
+public class UploadServlet extends HttpServlet{
+       public void init(ServletConfig config)throws ServletException{
+              super.init(config);
+       }
+       public void service(HttpServletRequest request,HttpServletResponse response)throws ServletException,IOException{
+              Part part = request.getPart("file");
+              PrintWriter out = response.getWriter();
+              out.println("此文件的大小："+part.getSize()+"<br />");
+              out.println("此文件类型："+part.getContentType()+"<br />");
+              out.println("文本框内容："+request.getParameter("name")+"<br />");
+              out.println(UploadUtil.getFileName(part)+"<br />");
+              part.write("F:\\1."+UploadUtil.getFileType(part));
+       }
+}
+```
+
+附，文件上传工具类UploadUtil.java
+
+```java
+import javax.servlet.http.*;
+/**
+ * Servlet3.0中没有专门获取文件类型和名称的API，需要我们自己从请求头中截取
+ **/
+public class UploadUtil{
+       public static String getFileType(Part p){
+              String name = p.getHeader("content-disposition");
+              String fileNameTmp = name.substring(name.indexOf("filename=")+10);
+              String type = fileNameTmp.substring(fileNameTmp.indexOf(".")+1,fileNameTmp.indexOf("\""));
+              return type;
+       }
+       public static String getFileName(Part p){
+              String name = p.getHeader("content-disposition");
+              String fileNameTmp = name.substring(name.indexOf("filename=")+10);
+              String fileName = fileNameTmp.substring(0,fileNameTmp.indexOf("\""));
+              return fileName;
+       }
+}
+```
+
+
+
+## 总结
+
+- Http协议
+
+  1. 基本了解 请求和响应的数据内容
+
+     请求行、 请求头 、请求体
+     响应行、响应头、响应体
+
+  2. Get和Post的区别
+
+- Servlet【重点】
+
+  1.写一个类，实现接口Servlet
+
+  2. 配置Servlet
+
+  3. 会访问Setvlet
+
+  4. Servlet的生命周期
+
+     init 一次 创建对象 默认初次访问就会调用或者可以通过配置，让它提前 load-on-startup
+     service	多次，一次请求对应一次service
+     destory 一次 销毁的时候 从服务器移除 或者 正常关闭服务器
+
+  5. ServletConfig
+
+     获取配置的信息， params
+
+     [TOC]
+
+     
+
+     ## Http协议&Servlet
+
+     ### Http协议
+
+     - 什么是协议
+
+     > 双方在交互、通讯的时候， 遵守的一种规范、规则。
+
+     - http协议
+
+     > 针对网络上的客户端 与 服务器端在执行http请求的时候，遵守的一种规范。 其实就是规定了客户端在访问服务器端的时候，要带上哪些东西， 服务器端返回数据的时候，也要带上什么东西。 
+
+     - 版本
+
+       1.0
+
+       ```
+       	请求数据，服务器返回后， 将会断开连接
+       ```
+
+       1.1
+
+       ```
+       请求数据，服务器返回后， 连接还会保持着。 除非服务器 | 客户端 关掉。 有一定的时间限制，如果都空着这个连接，那么后面会自己断掉。
+       ```
+
+     ### 演示客户端 如何 与服务器端通讯。
+
+     2. 打开tomcat. 输入localhost:8080 打开首页
+
+     3. ##### 在首页上找到Example 字样 
+
+     > 6.x 和 7.x 的文档页面有所不同，但是只要找到example就能够找到例子工程
+
+     4. 选择 servlet 例子 ---> Request Parameter
+
+     ![icon](C:/Users/%E4%BD%95%E8%BF%9B%E7%BB%93/Desktop/img/img01.png)
+
+     接着点击Request  Parameters 的 Execute超链接
+
+     ![icon](C:/Users/%E4%BD%95%E8%BF%9B%E7%BB%93/Desktop/img/img02.png)
+
+     执行tomcat的例子，然后通过chrome浏览器开发者工具中的Network栏查看浏览器和 tomcat服务器的对接细节
+
+     ##### Http请求数据解释 
+
+     > 请求的数据里面包含三个部分内容 ： 请求行 、 请求头 、请求体
+
+     - 请求行
+
+       POST /examples/servlets/servlet/RequestParamExample HTTP/1.1 
+
+       ```
+       POST ： 请求方式 ，以post去提交数据
+       	
+       /examples/servlets/servlet/RequestParamExample
+       请求的地址路径 ， 就是要访问哪个地方。
+       
+       HTTP/1.1 协议版本
+       ```
+
+     - 请求头
+
+       Accept: application/x-ms-application, image/jpeg, application/xaml+xml, image/gif, image/pjpeg, application/x-ms-xbap, */*
+       	Referer: http://localhost:8080/examples/servlets/servlet/RequestParamExample
+       	Accept-Language: zh-CN
+       	User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)
+       	Content-Type: application/x-www-form-urlencoded
+       	Accept-Encoding: gzip, deflate
+       	Host: localhost:8080
+       	Content-Length: 31
+       	Connection: Keep-Alive
+       	Cache-Control: no-cache
+
+       ```
+       Accept: 客户端向服务器端表示，我能支持什么类型的数据。 
+       Referer ： 真正请求的地址路径，全路径
+       Accept-Language: 支持语言格式
+       User-Agent: 用户代理 向服务器表明，当前来访的客户端信息。 
+       Content-Type： 提交的数据类型。经过urlencoding编码的form表单的数据
+       Accept-Encoding： gzip, deflate ： 压缩算法 。 
+       Host ： 主机地址
+       Content-Length： 数据长度
+       Connection : Keep-Alive 保持连接
+       Cache-Control ： 对缓存的操作
+       ```
+
+     - 请求体
+
+     > 浏览器真正发送给服务器的数据 
+
+     ```
+     发送的数据呈现的是key=value ,如果存在多个数据，那么使用 &
+     
+     firstname=zhang&lastname=sansan
+     ```
+
+     ##### Http响应数据解析
+
+     > 请求的数据里面包含三个部分内容 ： 响应行 、 响应头 、响应体
+
+     ```
+     HTTP/1.1 200 OK
+     Server: Apache-Coyote/1.1
+     Content-Type: text/html;charset=ISO-8859-1
+     Content-Length: 673
+     Date: Fri, 17 Feb 2017 02:53:02 GMT
+     
+     ...这里还有很多数据...
+     ```
+
+     - 响应行
+
+       HTTP/1.1 200 OK
+
+       ```
+       协议版本  
+       
+       状态码 
+       
+       	咱们这次交互到底是什么样结果的一个code. 
+       
+       	200 : 成功，正常处理，得到数据。
+       
+       	403  : for bidden  拒绝
+       	404 ： Not Found
+       	500 ： 服务器异常
+       
+       OK
+       
+       	对应前面的状态码  
+       ```
+
+     - 响应头
+
+       Server:  服务器是哪一种类型。  Tomcat
+
+       ```
+       Content-Type ： 服务器返回给客户端你的内容类型
+       
+       Content-Length ： 返回的数据长度
+       
+       Date ： 通讯的日期，响应的时间		
+       ```
+
+     ##### Get 和  Post请求区别
+
+     - post
+       1. 数据是以流的方式写过去，不会在地址栏上面显示。  现在一般提交数据到服务器使用的都是POST
+       2. 以流的方式写数据，所以数据没有大小限制。
+     - get
+       1. 会在地址栏后面拼接数据，所以有安全隐患。 一般从服务器获取数据，并且客户端也不用提交上面数据的时候，可以使用GET
+       2. 能够带的数据有限， 1kb大小
+
+     ### Web资源
+
+     - 静态资源
+
+       html 、 js、 css
+
+     - 动态资源
+
+       servlet/jsp
+
+     ## Servlet
+
+     ### servlet是什么?
+
+     > 其实就是一个java程序，运行在我们的web服务器上，用于接收和响应 客户端的http请求。 
+
+     > 更多的是配合动态资源来做。 当然静态资源也需要使用到servlet，只不过是Tomcat里面已经定义好了一个 DefaultServlet
+
+     ##### Hello Servlet
+
+     1. 得写一个Web工程 ， 要有一个服务器。
+     2. 测试运行Web工程
+        1. 新建一个类， 实现Servlet接口
+        2. 配置Servlet ， 用意： 告诉服务器，我们的应用有这么些个servlet。
+           在webContent/WEB-INF/web.xml里面写上以下内容。
+
+     ```xml
+     <!-- 向tomcat报告， 我这个应用里面有这个servlet， 名字叫做HelloServlet , 具体的路径是com.lanou3g.servlet.HelloServlet -->
+     <servlet>
+         <servlet-name>HelloServlet</servlet-name>
+         <servlet-class>com.lanou3g.servlet.HelloServlet</servlet-class>
+     </servlet>
+     
+     <!-- 注册servlet的映射。  servletName : 找到上面注册的具体servlet，  url-pattern: 在地址栏上的path 一定要以/打头 -->
+     <servlet-mapping>
+     <servlet-name>HelloServlet</servlet-name>
+     <url-pattern>/HelloServlet</url-pattern>
+     </servlet-mapping>
+     ```
+
+     3. 在地址栏上输入 http://localhost:8080/项目名称/HelloServlet
+
+     ##### Servlet的通用写法
+
+     1. 定义一个类
+     2. 继承HttpServlet
+     3. 重写doGet 和 doPost
+
+     ```java
+     public class HelloServlet extends HttpServlet {
+         //处理GET请求
+         @Override
+     	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+     		// do something
+     	}
+     	
+         //处理POST请求
+     	@Override
+     	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+     		
+             // 设置请求编码，防止出现中文参数乱码
+             req.setCharacterEncoding("UTF-8");
+     		
+             // do something
+     	}
+     }
+     ```
+
+     
+
+     Servlet的生命周期
+
+     - 生命周期
+
+     > 从创建到销毁的一段时间
+
+     - 生命周期方法
+
+     > 从创建到销毁，所调用的那些方法。
+
+     - init方法
+
+       在创建该servlet的实例时，就执行该方法。
+       	一个servlet只会初始化一次， init方法只会执行一次
+       	默认情况下是 ： 初次访问该servlet，才会创建实例。 
+
+     - service方法
+
+       只要客户端来了一个请求，那么就执行这个方法了。
+        	 该方法可以被执行很多次。 一次请求，对应一次service方法的调用
+
+     - destroy方法
+
+       servlet销毁的时候，就会执行该方法
+       	  触发时机：	
+
+       ```
+       1. 该项目从tomcat的里面移除。
+       2. 正常关闭tomcat就会执行 shutdown.bat
+       ```
+
+     > doGet 和 doPost不算生命周期方法，所谓的生命周期方法是指，从对象的创建到销毁一定会执行的方法， 但是这两个方法，不一定会执行。
+
+     ##### 让Servlet创建实例的时机提前。
+
+     1. 默认情况下，只有在初次访问servlet的时候，才会执行init方法。 有的时候，我们可能需要在这个方法里面执行一些初始化工作，甚至是做一些比较耗时的逻辑。 
+     2. 那么这个时候，初次访问，可能会在init方法中逗留太久的时间。 那么有没有方法可以让这个初始化的时机提前一点。 
+     3. 在配置的时候， 使用load-on-startup元素来指定， 给定的数字越小，启动的时机就越早。 一般不写负数， 从2开始即可。 
+
+     ```xml
+     <servlet>
+         <servlet-name>HelloServlet04</servlet-name>
+         <servlet-class>com.itheima.servlet.HelloServlet04</servlet-class>
+         <load-on-startup>2</load-on-startup>
+     </servlet>
+     ```
+
+     ### Servlet文件上传
+
+     在Servlet 3.0之前我们要实现文件上传，必须借助apache的commons-fileupload、commons-io包。
+
+     1. 添加lib包到WEB-INF/lib目录:
+
+     ```
+     commons-fileupload-1.4.jar
+     commons-io-2.2.jar
+     ```
+
+     2. 客户端网页
+
+     ```html
+     <!-- 注意method和enctype属性，文件上传必须用post提交，同时enctype必须设置成multipart/form-data -->
+     <form action="FileUploadServlet" method="post" enctype="multipart/form-data">
+         <input type="file" name="myfile">
+         <input type="submit" value="上传">
+     </form>
+     ```
+
+     3. 后台Servlet
+
+     ```java
+     import java.io.File;
+     import java.io.IOException;
+     import java.io.PrintWriter;
+     import java.util.List;
+     
+     import javax.servlet.ServletException;
+     import javax.servlet.http.HttpServlet;
+     import javax.servlet.http.HttpServletRequest;
+     import javax.servlet.http.HttpServletResponse;
+     
+     import org.apache.commons.fileupload.FileItem;
+     import org.apache.commons.fileupload.ProgressListener;
+     import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+     import org.apache.commons.fileupload.servlet.ServletFileUpload;
+     
+     /**
+      * 通过传统apache common-fleupload、common-io的方式上传文件
+      * @author John
+      *
+      */
+     public class FileUploadServlet extends HttpServlet {
+     	private static final long serialVersionUID = 1L;
+     
+     	// 上传文件存储目录
+         private static final String UPLOAD_DIRECTORY = "upload";
+     	
+     	// 上传配置
+         private static final int MEMORY_THRESHOLD   = 1024 * 1024 * 3;  // 3MB
+         private static final int MAX_FILE_SIZE      = 1024 *  40; // 40KB
+         private static final int MAX_REQUEST_SIZE   = 1024 * 1024 * 50; // 50MB
+     	
+     	@Override
+     	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+     		//判断请求中是否有上传文件
+     		resp.setContentType("text/html;charset=UTF-8");
+     		PrintWriter out = resp.getWriter();
+     		if(!ServletFileUpload.isMultipartContent(req)) {
+     			out.println("没有上传文件!");
+     			out.flush();
+     			out.close();
+     			return;
+     		}
+     		// 配置上传参数
+     		DiskFileItemFactory factory = new DiskFileItemFactory();
+     		// 设置内存临界值 - 超过后将产生临时文件并存储于临时目录中
+     		factory.setSizeThreshold(MEMORY_THRESHOLD);
+     		// 设置临时存储目录
+     		factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
+     		ServletFileUpload upload = new ServletFileUpload(factory);
+     		// 设置最大文件上传值
+     		upload.setFileSizeMax(MAX_FILE_SIZE);
+     		// 设置最大请求值 (包含文件和表单数据)
+     		upload.setSizeMax(MAX_REQUEST_SIZE);
+     		
+     		// 处理中文名称文件上传
+     //		upload.setHeaderEncoding("utf-8");
+     		upload.setProgressListener(new ProgressListener() {
+     			public void update(long currentSize, long fileSize, int arg2) {
+     				System.out.println("currentSize: " + currentSize + " fileSize: " + fileSize +" arg2: " + arg2);
+     			}
+     		});
+     		
+     		// 构造临时路径来存储上传的文件
+             // 这个路径相对当前应用的目录
+             String uploadPath = req.getServletContext().getRealPath("./") + File.separator + UPLOAD_DIRECTORY;
+             
+             // 如果目录不存在则创建
+             File uploadDir = new File(uploadPath);
+             if (!uploadDir.exists()) {
+                 uploadDir.mkdir();
+             }
+             
+             try {
+     			List<FileItem> items = upload.parseRequest(req);
+     			for(FileItem fi : items) {
+     				// 普通表单字段
+     				if(fi.isFormField()) {
+     					System.out.println("name: " + fi.getFieldName() 
+     					+ ", value: " + fi.getString());
+     					continue;
+     				}
+     				
+     				//保存文件
+     				File saveFile = new File(uploadDir, fi.getName());
+     				fi.write(saveFile);
+     				out.println("文件上传成功!");
+     				out.flush();
+     				out.close();
+     			}
+     		} catch (Exception e) {
+     			out.println("文件上传失败!(" + e.getMessage() + ")");
+     			out.flush();
+     			out.close();
+     		}
+     	}
+     }
+     ```
+
+     ### 文件下载
+
+     文件下载我们无需借助任何第三方包，也无需写太多实现代码。其原理其实就是设置响应头， 我们的浏览器其实不管你响应的是什么内容，只是根据响应头来做响应操作。比如我们响应的Content-Type设置为text/html浏览器就会渲染内容，如果我们响应的Content-Type设置为Content-Type:application/vnd.ms-excel，那浏览器就会调用本地excel程序或者直接用读取excel的方式来处理服务端返回的数据
+
+     下面是一些常用的请求头示例：
+
+     ```java
+     // 请求该页面就出现下载保存窗口。
+     header("Content-Type:application/force-download");
+     // 二进制流，不知道具体下载文件类型。
+     header("Content-Type:application/octet-stream");
+     // 表示要下载的文件类型是 .xls 
+     header("Content-Type:application/vnd.ms-excel");
+     // 提示用户将当前文件保存到本地。
+     header("Content-Type:application/download");
+     // 作为附件下载，文件名是 测试.xlsx
+     header("Content-Disposition:attachment;filename=.xlsx");
+     ```
+
+     
+
+     ##### ServletConfig
+
+     > Servlet的配置，通过这个对象，可以获取servlet在配置的时候一些信息
+
+     ```java
+     //1. 得到servlet配置对象 专门用于在配置servlet的信息
+     ServletConfig config = getServletConfig();
+     
+     //获取到的是配置servlet里面servlet-name 的文本内容
+     String servletName = config.getServletName();
+     System.out.println("servletName="+servletName);
+     
+     	
+     //2、。 可以获取具体的某一个参数。 
+     String address = config.getInitParameter("address");
+     System.out.println("address="+address);
+     
+     
+     //3.获取所有的参数名称
+     Enumeration<String> names = config.getInitParameterNames();
+     //遍历取出所有的参数名称
+     while (names.hasMoreElements()) {
+         String key = (String) names.nextElement();
+         String value = config.getInitParameter(key);
+         System.out.println("key==="+key + "   value="+value);
+     
+     }
+     ```
+
+     ##### 为什么需要有这个ServletConfig
+
+     1. 未来我们自己开发的一些应用，使用到了一些技术，或者一些代码，我们不会。 但是有人写出来了。它的代码放置在了自己的servlet类里面。 
+     2. 刚好这个servlet 里面需要一个数字或者叫做变量值。 但是这个值不能是固定了。 所以要求使用到这个servlet的公司，在注册servlet的时候，必须要在web.xml里面，声明init-params
+
+     在开发当中比较少用。
+
+     刚才的这个实验， 希望基础好或者感兴趣的同学，回去自己做一下。
+
+     ##### Servlet 3.0新特性
+
+     与Servlet2.5相比Servlet3.0对我们的Web开发工作做了很多简化，主要体现在很多以前需要大段xml配置的地方，现在只需要一个简单的注解就可以搞定
+
+     第二点提现在文件上传上，Servlet3.0以前我们要实现文件上传需要借助apache的fileupload包，Servlet3.0之后官方增加了Part方式和@MultipartConfig注解，可以让我们不需要借助任何第三方的包就可以很简便的实现文件上传
+
+     ##### Annotation支持
+
+     ##### @WebServlet
+
+     用于将一个类声明为 Servlet，该注解将会在部署时被容器处理，容器将根据具体的属性配置将相应的类部署为 Servlet。该注解具有下表给出的一些常用属性（以下所有属性均为可选属性，但是 vlaue 或者 urlPatterns 通常是必需的，且二者不能共存，如果同时指定，通常是忽略 value 的取值）：
+
+     | **属性名**     | **类型**       | **描述**                                                     |
+     | :------------- | :------------- | :----------------------------------------------------------- |
+     | name           | String         | 指定 Servlet 的 name 属性，等价于 <servlet-name>。如果没有显式指定，则该 Servlet 的取值即为类的全限定名。 |
+     | value          | String[]       | 该属性等价于 urlPatterns 属性。两个属性不能同时使用。        |
+     | urlPatterns    | String[]       | 指定一组 Servlet 的 URL 匹配模式。等价于 <url-pattern> 标签。 |
+     | loadOnStartup  | int            | 指定 Servlet 的加载顺序，等价于 <load-on-startup> 标签。     |
+     | initParams     | WebInitParam[] | 指定一组 Servlet 初始化参数，等价于 <init-param> 标签。      |
+     | asyncSupported | boolean        | 声明 Servlet 是否支持异步操作模式，等价于 <async-supported> 标签。 |
+     | description    | String         | 该 Servlet 的描述信息，等价于 <description> 标签。           |
+     | displayName    | String         | 该 Servlet 的显示名，通常配合工具使用，等价于 <dis           |
+
+     简单示例代码：
+
+     ```java
+     @WebServlet(name="HelloServlet" ,urlPatterns={"/HelloServlet"},loadOnStartup=1,
+                         initParams={
+                                @WebInitParam(name="name",value="xiazdong"),
+                                @WebInitParam(name="age",value="20")
+                         })
+     ```
+
+     相当于2.5中在web.xml中配置：
+
+     ```java
+     <servlet>
+         <servlet-name>HelloServlet</servlet-name>
+         <servlet-class>com.demo.HelloServlet</servlet-class>
+         <load-on-startup>-1</load-on-startup>
+         <async-supported>true</async-supported>
+         <init-param>
+             <param-name>name</param-name>
+             <param-value>xiazdong</param-value>
+         </init-param>
+         <init-param>
+             <param-name>age</param-name>
+             <param-value>20</param-value>
+         </init-param>
+     </servlet>
+     <servlet-mapping>
+         <servlet-name>HelloServlet</servlet-name>
+         <url-pattern>/HelloServlet</url-pattern>
+     </servlet-mapping>
+     ```
+
+     
+
+     ##### @WebFilter
+
+     用于将一个类声明为过滤器，该注解将会在部署时被容器处理，容器将根据具体的属性配置将相应的类部署为过滤器。该注解具有下表给出的一些常用属性 ( 以下所有属性均为可选属性，但是 value、urlPatterns、servletNames 三者必需至少包含一个，且 value 和 urlPatterns 不能共存，如果同时指定，通常忽略 value 的取值 )：
+
+     | **属性名**      | **类型**       | **描述**                                                     |
+     | :-------------- | :------------- | :----------------------------------------------------------- |
+     | filterName      | String         | 指定过滤器的 name 属性，等价于 <filter-name>                 |
+     | value           | String[]       | 该属性等价于 urlPatterns 属性。但是两者不应该同时使用。      |
+     | urlPatterns     | String[]       | 指定一组过滤器的 URL 匹配模式。等价于 <url-pattern> 标签。   |
+     | servletNames    | String[]       | 指定过滤器将应用于哪些 Servlet。取值是 @WebServlet 中的 name 属性的取值，或者是 web.xml 中 <servlet-name> 的取值。 |
+     | dispatcherTypes | DispatcherType | 指定过滤器的转发模式。具体取值包括： ASYNC、ERROR、FORWARD、INCLUDE、REQUEST。 |
+     | initParams      | WebInitParam[] | 指定一组过滤器初始化参数，等价于 <init-param> 标签。         |
+     | asyncSupported  | boolean        | 声明过滤器是否支持异步操作模式，等价于 <async-supported> 标签。 |
+     | description     | String         | 该过滤器的描述信息，等价于 <description> 标签。              |
+     | displayName     | String         | 该过滤器的显示名，通常配合工具使用，等价于 <                 |
+
+     简单示例：
+
+     ```java
+     @WebFilter(filterName="",urlPattern={"/"});
+     ```
+
+     
+
+     ##### @WebInitParam
+
+     该注解通常不单独使用，而是配合 @WebServlet 或者 @WebFilter 使用。它的作用是为 Servlet 或者过滤器指定初始化参数，这等价于 web.xml 中 &lt;servlet&gt; 和 &lt;filter&gt; 的 &lt;init-param&gt; 子标签。@WebInitParam 具有下表给出的一些常用属性：
+
+     | **属性名**  | **类型** | **是否可选** | **描述**                              |
+     | :---------- | :------- | :----------- | :------------------------------------ |
+     | name        | String   | 否           | 指定参数的名字，等价于 <param-name>。 |
+     | value       | String   | 否           | 指定参数的值，等价于 <param-value>。  |
+     | description | String   | 是           |                                       |
+
+     
+
+     ##### @WebListener
+
+     原本需要在web.xml中配置的&lt;listener&gt;标签，在3.0中我们只要往Java类上面添加@WebListener注解就可以了
+
+     | **属性名** | **类型** | **是否可选** | **描述**             |
+     | :--------- | :------- | :----------- | :------------------- |
+     | value      | String   | 是           | 该监听器的描述信息。 |
+
+     该注解用于将类声明为监听器，被 @WebListener 标注的类必须实现以下至少一个接口：
+
+     - ServletContextListener
+     - ServletContextAttributeListener
+     - ServletRequestListener
+     - ServletRequestAttributeListener
+     - HttpSessionListener
+     - HttpSessionAttributeListener
+
+     示例代码：
+
+     ```java
+     @WebListener("This is only a demo listener") 
+     public class SimpleListener implements ServletContextListener{...}
+     ```
+
+     相当于2.5中的
+
+     ```xml
+     <listener> 
+         <listener-class>footmark.servlet.SimpleListener</listener-class> 
+     </listener>
+     ```
+
+     
+
+     ##### @MultipartConfig
+
+     这个注解用于开启文件上传功能，属性值如下：
+
+     | 属性名            | 类型   | 是否可选 | 描述                                                         |
+     | :---------------- | :----- | :------- | :----------------------------------------------------------- |
+     | fileSizeThreshold | int    | 是       | 当数据量大于该值时，内容将被写入文件。                       |
+     | location          | String | 是       | 存放生成的文件地址。                                         |
+     | maxFileSize       | long   | 是       | 允许上传的文件最大值。默认值为 -1，表示没有限制。            |
+     | maxRequestSize    | long   | 是       | 针对该 multipart/form-data 请求的最大数量，默认值为 -1，表示没有限制。 |
+
+     
+
+     具体用法，请参见《文件上传》章节
+
+     ##### 文件上传
+
+     在Servlet3.0之前我们要想实现文件上传必须借助common-fileupload或者SmartUpload，上传过程比较麻烦。而到了Servlet3.0，我们不需要导入任何第三方jar包，并且提供了很方便进行文件上传的功能
+
+     主要步骤如下：
+
+     1. 在需要实现文件上传的Servlet类前加上@MultipartConfig注解
+     2. 通过request.getPart()获得上传的文件，以及文件相关的各种属性
+     3. 通过part.write()将上传的文件写到服务器
+
+     客户端代码：
+
+     ```html
+     <html>
+            <body>
+                   <form method="post" enctype="multipart/form-data" action="upload">
+                  <input type="file" id="file" name="file"/>
+                  <input type="text" id="name" name="name"/>
+                   <input type="submit" value="提交"/>
+                   </form>
+            </body>
+     </html>
+     ```
+
+     服务端代码：
+
+     ```java
+     package org.servlet;
+     import java.io.*;
+     import javax.servlet.*;
+     import javax.servlet.http.*;
+     import javax.servlet.annotation.*;
+      
+     @WebServlet(name="UploadServlet" ,urlPatterns={"/upload"})
+     @MultipartConfig
+     public class UploadServlet extends HttpServlet{
+            public void init(ServletConfig config)throws ServletException{
+                   super.init(config);
+            }
+            public void service(HttpServletRequest request,HttpServletResponse response)throws ServletException,IOException{
+                   Part part = request.getPart("file");
+                   PrintWriter out = response.getWriter();
+                   out.println("此文件的大小："+part.getSize()+"<br />");
+                   out.println("此文件类型："+part.getContentType()+"<br />");
+                   out.println("文本框内容："+request.getParameter("name")+"<br />");
+                   out.println(UploadUtil.getFileName(part)+"<br />");
+                   part.write("F:\\1."+UploadUtil.getFileType(part));
+            }
+     }
+     ```
+
+     附，文件上传工具类UploadUtil.java
+
+     ```java
+     import javax.servlet.http.*;
+     /**
+      * Servlet3.0中没有专门获取文件类型和名称的API，需要我们自己从请求头中截取
+      **/
+     public class UploadUtil{
+            public static String getFileType(Part p){
+                   String name = p.getHeader("content-disposition");
+                   String fileNameTmp = name.substring(name.indexOf("filename=")+10);
+                   String type = fileNameTmp.substring(fileNameTmp.indexOf(".")+1,fileNameTmp.indexOf("\""));
+                   return type;
+            }
+            public static String getFileName(Part p){
+                   String name = p.getHeader("content-disposition");
+                   String fileNameTmp = name.substring(name.indexOf("filename=")+10);
+                   String fileName = fileNameTmp.substring(0,fileNameTmp.indexOf("\""));
+                   return fileName;
+            }
+     }
+     ```
+
+     #### Servlet查询分页
+
+     ##### 逻辑分页
+
+     一次从数据库中把所有数据读取到内存中， 在内存中进行数据切分，然后传到前端页面。
+
+     ##### 物理分页
+
+     在查询数据库时就按照页数只取需要的数据，不在内存中处理
+
+     ##### 逻辑分页和物理分页对比
+
+     1. 逻辑分页的好处在于不用多次查询数据库，可以有效减轻数据库的压力；缺点在于只适用于少量数据的表，如果数据量过大会占用过多内存，或内存装不下
+     2. 物理分页的好处在于无论数据量大、小都可以用，代码业务逻辑简单；缺点在于每点击一次翻页都要对数据库发起一次查询，对数据库的压力相对比较大
+
+     ## Ajax
+
+     - 是什么?
+
+     
+
+     > Ajax是javaScript的一部分 
+     >
+     > 并不是新的技术，只是把原有的技术，整合到一起而已。
+
+     ```
+     1.使用CSS和XHTML来表示。
+     2.使用DOM模型来交互和动态显示。
+     3.使用XMLHttpRequest来和服务器进行异步通信。
+     4.使用javascript来绑定和调用。
+     ```
+
+     - 有什么用?
+
+     > 咱们的网页如果想要刷新局部内容。 那么需要重新载入整个网页。用户体验不是很好。  就是为了解决局部刷新的问题。 保持其他部分不动，只刷新某些地方。 
+
+     #### 数据请求 Get
+
+     ##### 创建ajax请求对象
+
+     ```javascript
+     function  ajaxFunction(){
+     	    var xmlHttp;
+     	    try{ // Firefox, Chrome, Opera 8.0+, Safari
+     	        xmlHttp=new XMLHttpRequest();
+     	    }
+     	    catch (e){
+     	        try{// Internet Explorer（高版本）
+     	            xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+     	        }
+     	        catch (e){
+     	            try{// Internet Explorer（低版本）
+     	                xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+     	            }
+     	            catch (e){}
+     	        }
+     	    }
+     	    return xmlHttp;
+     	}
+     ```
+
+     ##### 发送请求
+
+     ```javascript
+     //执行get请求
+     function get() {
+     
+         //1. 创建xmlhttprequest 对象
+         var request = ajaxFunction();
+     
+         //2. 发送请求。
+         /*	
+     	 *	参数一： 请求类型  GET or  POST
+     	 *	参数二： 请求的路径
+     	 *	参数三： 是否异步， true  or false
+     	 */
+         request.open("GET" ,"TestServlet" ,true );
+         request.send();
+     }
+     
+     
+     
+     // 如果发送请求的同时，还想获取数据，那么代码如下
+     
+     //执行get请求
+     function get() {
+     
+         //1. 创建xmlhttprequest 对象
+         var request = ajaxFunction();
+     
+         //2. 发送请求
+         request.open("GET" ,"TestServlet?name=aa&age=18" ,true );
+     
+         //3. 获取响应数据 注册监听的意思。  一会准备的状态发生了改变，那么就执行 = 号右边的方法
+         request.onreadystatechange = function(){
+     
+             //前半段表示 已经能够正常处理。  再判断状态码是否是200
+             if(request.readyState == 4 && request.status == 200){
+                 //弹出响应的信息
+                 alert(request.responseText);
+             }
+         }
+         request.send();
+     }
+     ```
+
+     ##### 数据请求 Post
+
+     ```javascript
+     <script type="text/javascript">
+     	//1. 创建对象
+     	// 和get请求一样
+     	
+     	function post() {
+     		//1. 创建对象
+     		var request = ajaxFunction();
+     		
+     		//2. 发送请求
+     		request.open( "POST", "TestServlet", true );
+     	
+     		//如果不带数据，写这行就可以了
+     		//request.send();
+     		
+     		//如果想带数据，就写下面的两行
+     		
+     		//如果使用的是post方式带数据，那么 这里要添加头， 说明提交的数据类型是一个经过url编码的form表单数据
+     		request.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+     		
+     		//带数据过去  ， 在send方法里面写表单数据。 
+     		request.send("name=aobama&age=19");
+     	}
+     
+     </script>
+     
+     
+     // 需要获取数据的写法
+     
+     function post() {
+         //1. 创建对象
+         var request = ajaxFunction();
+     
+         //2. 发送请求
+         request.open( "POST", "TestServlet", true );
+     
+         //想获取服务器传送过来的数据， 加一个状态的监听。 
+         request.onreadystatechange=function(){
+             if(request.readyState==4 && request.status == 200){
+                 alert("post："+request.responseText);
+                 console.log(JSON.parse(request.responseText));
+             }
+         }
+     
+         //如果使用的是post方式带数据，那么 这里要添加头， 说明提交的数据类型是一个经过url编码的form表单数据
+         request.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+     
+         //带数据过去， 在send方法里面写表单数据。 
+         // 如果是GET请求，参数写在这里是无效的
+         request.send("name=aobama&age=19");
+     }
+     ```
+
+     ## JQuery Ajax
+
+     ##### 底层ajax写法
+
+     ```javascript
+     // 语法：$.ajax(url, [settings]);
+     
+     $.ajax("TestServlet", {
+         type: "GET",
+         data: {
+             action: "json"
+         },
+         dataType: "json",
+         success: function(data, status_text){
+             console.log(data);
+             console.log("status_text: " + status_text);
+             console.log("status_code: " + data.code);
+         }
+     });
+     ```
+
+     > $.ajax方法是其他所有ajax相关方法的底层实现，其他方法都是在它的基础上给我们封装的更方便使用的方法。 关于$.ajax的详细介绍参见 <http://jquery.cuishifeng.cn/jQuery.Ajax.html>
+
+     ##### get请求
+
+     ```javascript
+     /*
+      * 参数：
+      *  url: 请求地址
+      *  data: 待发送 Key/value 参数
+      *  fn: 请求成功后回调函数
+      *  type: 返回内容格式，xml, html, script, json, text, _default
+      */
+     
+     $.get( "url",{pid:pid} ,function(data,status_text){
+         console.log(data);
+         console.log("status_text: " + status_text);
+         console.log("status_code: " + data.code);
+     },"json" );	// 指定请求返回的格式是json，jquery会帮我们把服务端返回的json字符串转换成js的json对象
+     ```
+
+     ##### post请求
+
+     ```javascript
+     /*
+      * 参数：
+      *  url: 请求地址
+      *  data: 待发送 Key/value 参数
+      *  fn: 请求成功后回调函数
+      *  type: 返回内容格式，xml, html, script, json, text, _default
+      */
+     
+     $.post( "url",{pid:pid} ,function(data,status){
+         console.log(data);
+         console.log("status_text: " + status_text);
+         console.log("status_code: " + data.code);
+     },"json" );	// 指定请求返回的格式是json，jquery会帮我们把服务端返回的json字符串转换成js的json对象
+     ```
+
+     ##### 获取JSON数据专用方法
+
+     ```javascript
+     $.getJSON("url", {id:1, name: "zhangsan"} function(json){
+       console.log(json);
+     });
+     ```
+
+     
+
+     #### 服务器和客户端数据传输的方式
+
+     ##### xml
+
+     因为无效数据占比太大，阅读困难。基本已经被json格式淘汰掉了
+
+     ```xml
+       	<list>
+             <city>
+             <id>1<id>
+             <pid>1</pid>
+             <cname>深圳</cname>
+             </city>
+             <city >
+             <id>2<id>
+             <pid>1</pid>
+             <cname>东莞</cname>
+             </city>
+         </list>
+     ```
+
+     ##### json
+
+     阅读性更好 、 占用空间更小。
+
+     ```json
+     {"name":"aaa" , "age":19}
+     ```
+
+     ##### fastjson库
+
+     ```
+     JSON.toJSONString();	// 将JavaBean encode成 json string
+     JSON.parseObject();		// 将json对象decode成javabean
+     JSON.parseArray();		// 将json数组decode成java List或 JSONArray类型
+     ```
+
+     ## 总结
+
+     ### Ajax  
+
+     ```
+     * 创建请求对象
+     
+     * 发送get请求
+     
+     * 发送post请求
+     ```
+
+     ### JQuery
+
+     ```
+     发送get请求
+     
+     发送post请求
+     ```
+
+     ##### 服务器返回json数据
+
+     ### 总结
+
+     - Http协议
+
+       1. 基本了解 请求和响应的数据内容
+
+          请求行、 请求头 、请求体
+          响应行、响应头、响应体
+
+       2. Get和Post的区别
+
+     - Servlet【重点】
+
+       1.写一个类，实现接口Servlet
+
+       2. 配置Servlet
+
+       3. 会访问Setvlet
+
+       4. Servlet的生命周期
+
+          init 一次 创建对象 默认初次访问就会调用或者可以通过配置，让它提前 load-on-startup
+          service	多次，一次请求对应一次service
+          destory 一次 销毁的时候 从服务器移除 或者 正常关闭服务器
+
+       5. ServletConfig
+
+          获取配置的信息， params
+
